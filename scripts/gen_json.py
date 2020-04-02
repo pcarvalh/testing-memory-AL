@@ -7,7 +7,7 @@ def create_json(order, use_memory):
     for id in order.index[0:]:
         test_qs = order.loc[id, 'V1':'V16'].values.tolist()
         post_qs = order.loc[id, 'q01':'q16'].values.tolist()
-
+        print(test_qs)
         seq = {"agent_name": id,
                 "agent_type": "ModularAgent",
                 "stay_active": True,
