@@ -38,5 +38,33 @@ The $\beta_i$ coefficient is determined by examining a specific element in the s
 
 Retrieval is calculated in the `request` function. 
 
+## BRD information
+
+![image-20200521113312276](C:\Users\nulls\AppData\Roaming\Typora\typora-user-images\image-20200521113312276.png)
+
+- This is an example of the current BRD setup. The nine boxes in the middle represent the individual problem parameters (for example, in the above image, 12 represents the base length, and 10 represents the height of the triangle). There may be extraneous information encoded within the BRD.
+
+## Current status
+
+### Experiment Design
+
+- Experiment modeled on 2019 Mechanical Turk data. Each AL agent completes 16 training questions, and 10 post-test questions. Each question tests geometry skills related to rectangles, triangles, trapezoids, and circles. 
+- Each question is either a **fact** or a **skill**: facts test knowledge of the area formula for the given shape, while skills involve computing the area for the given shape.
+
+### Implementation
+
+- Facts and skills receive different activation boosts (see beta coefficient above), which results in skills having higher initial activation upon every recall, in addition to higher decay.
+- AL operators are one-shot. For skills, this means that AL computes the area of a problem in one step, rather than multi-step processes. For facts, this means that the AL operator is simply the corresponding string for the area formula of a shape (e.g. "A=l*w").
+- Worked example training questions automatically request a bottom-out hint from the tutor, while retrieval practice questions only a request a bottom-out hint if AL fails to find an appropriate skill to apply.
+- Post-tests currently use the *test_mode* parameter, which ensures that feedback is not given.
+
+### Future changes
+
+- Adding some sort of prior knowledge
+- Add retention interval
+- Disallow multiple attempts for retrieval practice questions
+
+
+
 
 
