@@ -1,0 +1,129 @@
+{
+	"training_set1": [{
+		"agent_name": "test",
+		"agent_type": "ModularAgent",
+		"stay_active": true,
+		"dont_save": true,
+		"args": {
+			"when_learner": "trestle",
+			"where_learner": "mostspecific",
+			"heuristic_learner": "proportioncorrect",
+			"how_cull_rule": "mostparsimonious",
+			"planner": "fo_planner",
+			"search_depth": 1,
+			"numerical_epsilon": 0.0,
+			"use_memory": true,
+		  	"id": "rp_f_1",
+			"activation_path": "new-9-25-rp-f.txt"
+		},
+		"feature_set": ["equals"],
+		"function_set": [],
+		"problem_set": [{
+			"set_params": {
+				"HTML": "model/HTML/new_experiment.html",
+				"repetitions": 1
+			}
+		}, {
+			"set_params": {
+				"examples_only": true,
+				"test_mode": false
+			}
+		}, {
+			"question_file": "../NewExperiment/sun_1_we.brd"
+		}, {
+			"set_params": {
+				"examples_only": true,
+				"test_mode": false
+			}
+		}, {
+			"question_file": "../NewExperiment/command_1_we.brd"
+		}, {
+			"set_params": {
+				"examples_only": false,
+				"test_mode": false
+			}
+		}, {
+			"question_file": "../NewExperiment/sun_1.brd"
+		}, {
+			"set_params": {
+				"examples_only": true,
+				"test_mode": false
+			}
+		}, {
+			"question_file": "../NewExperiment/diamond_1_we.brd"
+		}, {
+			"set_params": {
+				"examples_only": false,
+				"test_mode": false
+			}
+		}, {
+			"question_file": "../NewExperiment/sun_1.brd"
+		}, {
+			"set_params": {
+				"examples_only": false,
+				"test_mode": false
+			}
+		}, {
+			"question_file": "../NewExperiment/command_1.brd"
+		}, {
+			"set_params": {
+				"examples_only": false,
+				"test_mode": false
+			}
+		}, {
+			"question_file": "../NewExperiment/diamond_1.brd"
+		}, {
+			"set_params": {
+				"examples_only": false,
+				"test_mode": false
+			}
+		}, {
+			"question_file": "../NewExperiment/diamond_1.brd"
+		}, {
+			"set_params": {
+				"examples_only": false,
+				"test_mode": false
+			}
+		}, {
+			"question_file": "../NewExperiment/diamond_1.brd"
+		}, {
+			"set_params": {
+				"examples_only": false,
+				"test_mode": false
+			}
+		}, {
+			"question_file": "../NewExperiment/command_1.brd"
+		}, {
+			"set_params": {
+				"examples_only": false,
+				"test_mode": false
+			}
+		}, {
+			"question_file": "../NewExperiment/command_1.brd"
+		}, {
+			"set_params": {
+				"examples_only": false,
+				"test_mode": false
+			}
+		}, {
+			"question_file": "../NewExperiment/sun_1.brd"
+		}, {
+			"set_params": {
+				"examples_only": false,
+				"test_mode": false
+			}
+		}, {
+			"question_file": "../NewExperiment/prepost2_2.brd"
+		}, {
+			"question_file": "../NewExperiment/prepost2_10.brd"
+		}, {
+			"question_file": "../NewExperiment/prepost2_6.brd"
+		}, {
+			"question_file": "../NewExperiment/prepost2_14.brd"
+		}, {
+			"question_file": "../NewExperiment/prepost2_12.brd"
+		}, {
+			"question_file": "../NewExperiment/prepost2_4.brd"
+		}]
+	}]
+}
