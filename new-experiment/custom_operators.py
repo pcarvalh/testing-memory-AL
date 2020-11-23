@@ -83,6 +83,22 @@ command_rule = Operator(('Command', '?x', '?y', '?z'),
 Operator.register("command_rule", command_rule)
 
 
+def bullseye(a,b):
+  a = float(a)
+  b = float(b)
+  if a.is_integer() and b.is_integer() and a > 0 and a < 6: # limiter on exponent
+      l = int(b) // int(a)
+      r = int(b)**int(a)
+      return str(l+r)
+  return str(-1)
+
+bullseye_rule = Operator(('Bullseye', '?x', '?y'),
+		            [(('value', '?x'), '?xv'),
+		             (('value', '?y'), '?yv')],
+		            [(('value', ('Bullseye', ('value', '?x'), ('value', '?y'))),
+		              (bullseye, '?xv', '?yv'))])
+Operator.register("bullseye_rule", bullseye_rule)
+
 
 
 
