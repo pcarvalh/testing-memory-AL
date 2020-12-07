@@ -6,7 +6,7 @@
             <verb>SendNoteProperty</verb>
             <properties>
                 <MessageType>StartProblem</MessageType>
-                <ProblemName>sun_1</ProblemName>
+                <ProblemName>sun_1c</ProblemName>
             </properties>
         </message>
         <message>
@@ -133,7 +133,7 @@
                     <value>UpdateTextField</value>
                 </Action>
                 <Input>
-                    <value>sun_1</value>
+                    <value>sun_1c</value>
                 </Input>
             </properties>
         </message>
@@ -145,7 +145,7 @@
         </message>
     </startNodeMessages>
     <node locked="false" doneState="false">
-        <text>sun_1</text>
+        <text>sun_1c</text>
         <uniqueID>1</uniqueID>
         <dimension>
             <x>305</x>
