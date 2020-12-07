@@ -9,10 +9,10 @@ def generate_training_seq(condition, concept, shapes, seed):
     if concept == "Facts":
         for shape in shapes:
             if condition == "Retrieval Practice": # this loop needs to change if we duplicate brds for retrieval practice
-                retrieval_practice = retrieval_practice + [shape + "_" + "1" for n in range(3)]
+                retrieval_practice = retrieval_practice + [shape + "_" + "1" + l for l in ["a", "b", "c"]]
                 worked_examples = worked_examples + [shape + "_" + "1" + "_we"]
             else:
-                retrieval_practice = retrieval_practice + [shape + "_" + "1" for n in range(2)]
+                retrieval_practice = retrieval_practice + [shape + "_" + "1" + l for l in ["a", "b"]]
                 worked_examples = worked_examples + [shape + "_" + "1" + "_we" for n in range(2)]
     else:
         for shape in shapes:
@@ -25,11 +25,13 @@ def generate_training_seq(condition, concept, shapes, seed):
                 rp_n = order[2:]
             retrieval_practice = retrieval_practice + [shape + "_" + str(n) for n in rp_n]
             worked_examples = worked_examples + [shape + "_" + str(n) + "_we" for n in we_n]
-
     if condition == "Retrieval Practice":
         # randomize RP order (since we're using all the questions)
         random.shuffle(retrieval_practice)
-        prefixes = [item[:-2] for item in retrieval_practice]
+        if concept == "Facts":
+            prefixes = [item[:-3] for item in retrieval_practice]
+        else:
+            prefixes = [item[:-2] for item in retrieval_practice]
         for i in range(len(shapes)):
             idx = prefixes.index(shapes[i]) # find first instance of shape
             we_q = worked_examples[i]
@@ -81,9 +83,9 @@ def to_json(df, train_seqs, post_seq, fname, use_memory):
             "planner": "numba",
             # "numerical_epsilon": 0.0,
             "c": 0.277,
-			"alpha": 0.177,
-			"tau": -0.7,
-			"exp_beta": 4,
+            "alpha": 0.177,
+            "tau": -0.7,
+            "exp_beta": 4,
             "agent_id": agent_id,
             "feature_set" : ["Equals"],
             "function_set": ["RipFloatValue", "Add", "Subtract", "Multiply", "Divide"] + ops,
@@ -100,10 +102,9 @@ def to_json(df, train_seqs, post_seq, fname, use_memory):
                                 "test_mode": True,
                                 "repetitions": 1}}] +
                             [{"question_file": str("../NewExperiment/" + q + ".brd")} for q in post_seq] #question_path
-
             }
-            data["training_set1"].append(seq)
-        return data
+        data["training_set1"].append(seq)
+    return data
 
 def main():
     parser = argparse.ArgumentParser()
@@ -143,7 +144,7 @@ def main():
         json.dump(js, f)
 
     header = "agent_id," + "training_type," + "training_concept," + ",".join(["q" + str(i) for i in range(1, n_shapes*4+1)]) +  "," + ",".join(["post_q" + str(i) for i in range(1, 9)]) + "\n"
-    with open(fname, 'w') as f:
+    with open(fname + ".csv", 'w') as f:
         f.write(header)
         for i in range(n*4):
             f.write(",".join(df[i]) + "\n")
