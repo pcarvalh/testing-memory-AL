@@ -56,18 +56,15 @@ def to_json(df, train_seqs, post_seq, fname, use_memory):
             ops = ["Diamond", "Sun", "Command", "Bullseye"]
         else:
             ops = []
-
+        training_qs = []
         for q in train_seqs[i]:
-            training_qs = []
-            for q in train_seqs[i]:
-                if re.search("_we", q):
-                    training_qs.append({"set_params": {"examples_only": True,
-                                                        "test_mode": False}})
-                else:
-                    training_qs.append({"set_params": {"examples_only": False,
-                    "test_mode": False}})
-                training_qs.append({"question_file": str("../NewExperiment/" + q + ".brd")}) # question path
-
+            if re.search("_we", q):
+                training_qs.append({"set_params": {"examples_only": True,
+                                                    "test_mode": False}})
+            else:
+                training_qs.append({"set_params": {"examples_only": False,
+                "test_mode": False}})
+            training_qs.append({"question_file": str("../NewExperiment/" + q + ".brd")}) # question path
         seq = {"agent_name": agent_id,
         "agent_type": "MemoryAgent",
         "stay_active": True,
@@ -77,7 +74,6 @@ def to_json(df, train_seqs, post_seq, fname, use_memory):
             "when_learner": "decisiontree",
             "where_learner": "MostSpecific",
                         "use_memory": use_memory,
-
             # "heuristic_learner": "proportioncorrect",
             # "how_cull_rule": "mostparsimonious",
             "planner": "numba",
@@ -91,18 +87,18 @@ def to_json(df, train_seqs, post_seq, fname, use_memory):
             "function_set": ["RipFloatValue", "Add", "Subtract", "Multiply", "Divide"] + ops,
             "activation_path": fname + ".txt"
             },
-            "problem_set": [{"set_params":
-                            {"HTML": "model/HTML/new_experiment.html", #html path
-                            # "examples_only": True,
-                            "repetitions": 1}
-                            }] +
-                            training_qs +
-                            [{"set_params" :
-                                {"examples_only" : False,
-                                "test_mode": True,
-                                "repetitions": 1}}] +
-                            [{"question_file": str("../NewExperiment/" + q + ".brd")} for q in post_seq] #question_path
-            }
+        "problem_set": [{"set_params":
+                        {"HTML": "model/HTML/new_experiment.html", #html path
+                        # "examples_only": True,
+                        "repetitions": 1}
+                        }] +
+                        training_qs +
+                        [{"set_params" :
+                            {"examples_only" : False,
+                            "test_mode": True,
+                            "repetitions": 1}}] +
+                        [{"question_file": str("../NewExperiment/" + q + ".brd")} for q in post_seq] #question_path
+        }
         data["training_set1"].append(seq)
     return data
 
@@ -136,9 +132,8 @@ def main():
             s = seeds[j + n*i] if seed else None
             agent_id = conditions[i] + "_" + str(j+1)
             train_seq = generate_training_seq(training_type[i], training_concept[i], shapes, s)
-            train_seqs[i] = train_seq
+            train_seqs[j + n*i] = train_seq
             df[j + n*i] = [agent_id] + [training_type[i]] + [training_concept[i]] + train_seq + post_seq
-    
     js = to_json(df, train_seqs, post_seq, fname, use_memory)
     with open(fname + ".json", 'w') as f:
         json.dump(js, f)
