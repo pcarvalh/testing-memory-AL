@@ -36,6 +36,7 @@ data_full <- rbind(data, we_sub, rp_sub) %>%
   group_by(prolific_id) %>% 
   arrange(prolific_id, trial_index) %>% 
   mutate(q = tolower(q),
+         correctness = ifelse(correct, 1, 0),
          q_number = row_number(start_time),
          participant_concepts = substr(participant_condition, 0, 1),
          participant_training = substr(participant_condition, 3, 5),
