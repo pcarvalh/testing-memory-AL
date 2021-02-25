@@ -43,6 +43,7 @@ data_full <- rbind(data, we_sub, rp_sub) %>%
          correct_skill = paste0(shape, "_", participant_concepts),
          activated_skill = ifelse(correct, paste0(shape, "_", participant_concepts), response)) %>%
   select(trial_type, prolific_id, participant_concepts, participant_training, q_number, trial_subtype, question_type,
-         correctness, q, shape, correct_skill, activated_skill)
+         correctness, q, shape, correct_skill, activated_skill) %>% 
+  filter(n() == 40) # hard-coded assumption
 
 write_csv(data_full, "immediate_test_clean.csv")
