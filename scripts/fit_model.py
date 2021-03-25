@@ -36,9 +36,9 @@ def compute_retrieval(activation, tau, s):
     # return random() < (1/(1+math.exp((tau - activation) / s)))
     return (1/(1+math.exp((tau - activation[-1]) / s)))
 
-def update_activation_itr(activated_skill, activations, exp_inds, b0, b1, c, alpha, t):
+def update_activation_itr(activated_skill, question_type, activations, exp_inds, b0, b1, c, alpha, t):
     for skill in activations:
-        if skill == activated_skill:
+        if question_type == "WE" and skill == activated_skill:
             beta = b0
         else:
             beta = b1
@@ -59,6 +59,7 @@ def calculate_training_activation(df, b0, b1, c, alpha, tau, s):
         for i in range(24+16): # 24 questions
             activated_skill = df[pid]["answer_seq"][i]
             correct_skill = df[pid]["correct_ans"][i]
+            question_type = df[pid]["question_type_seq"][i]
             if i > 23:
                 if activated_skill in activations[pid]:
                     retrieval_probs[pid][i-24] = compute_retrieval(activations[pid][correct_skill], tau, s)
@@ -67,24 +68,24 @@ def calculate_training_activation(df, b0, b1, c, alpha, tau, s):
                 activations[pid][activated_skill] = np.array([-np.inf])
             else:
                 exp_inds[pid][activated_skill] = np.append(exp_inds[pid][activated_skill], i)
-            update_activation_itr(activated_skill, activations[pid], exp_inds[pid], b0, b1, c, alpha, t=i)
+            update_activation_itr(activated_skill, question_type, activations[pid], exp_inds[pid], b0, b1, c, alpha, t=i)
     return retrieval_probs
 
-def mse(args):
+def sse(args):
     total = 0
     b0, b1, c, alpha, tau, s = args
     retrieval_probs = calculate_training_activation(df, b0, b1, c, alpha, tau, s)
     for pid in retrieval_probs:
-        total += np.sum((df[pid][correctness][-16:] - retrieval_probs[pid])**2)
+        total += np.sum((df[pid]["correctness"][-16:] - retrieval_probs[pid])**2)
     return total
 
 def main():
     # put these in the fitting function
     # "c": 0.277, "alpha": 0.177, "tau": -0.7, "exp_beta": 4
-    initial_guess = [4, 1, 0.277, 0.177, -0.7, 1]
+    initial_guess = [4, 0, 0.277, 0.177, -0.7, 1]
     global df
     df = read_data("immediate_test_clean.csv")
-    fitted_params = minimize(mse, initial_guess, tol=1e-3, method="Powell")
+    fitted_params = minimize(sse, initial_guess, tol=1e-3, method="Powell")
     print(fitted_params)
 
 
