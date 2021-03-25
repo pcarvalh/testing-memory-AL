@@ -49,7 +49,7 @@ def compute_decay(activations, exp_i, c, alpha):
 def compute_retrieval(activation, tau, s):
     # print("probability of retrieval:", (1/(1+math.exp((tau - activation[-1]) / s))))
     # return random() < (1/(1+math.exp((tau - activation) / s)))
-    return (1/(1+math.exp((tau - activation[-1]) / s)))
+    return (1/(1+np.exp((tau - activation[-1]) / s)))
 
 def compute_evidence(skill, base_activations):
     sk = skill.split('_')[0]
@@ -127,8 +127,8 @@ def sse(args):
 
 def main():
     # put these in the fitting function
-    # "c": 0.277, "alpha": 0.177, "tau": -0.7, "exp_beta": 4, "decay_acc": 0, "gamma": 0.1
-    initial_guess = [4, 0, 0.277, 0.177, -0.7, 1, 0, 1]
+    # "c": 0.277, "alpha": 0.177, "tau": -0.7, "exp_beta": 4, "decay_acc": 0.1, "gamma": 1
+    initial_guess = [4, 0, 0.277, 0.177, -0.7, 1, 0.1, 1]
     global df
     df = read_data("immediate_test_clean.csv")
     fitted_params = minimize(sse, initial_guess, tol=1e-3, method="Powell")
