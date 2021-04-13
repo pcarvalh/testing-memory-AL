@@ -5,19 +5,6 @@ from pprint import pprint
 from random import random
 from scipy.optimize import minimize
 
-# calculated externally
-similarity = {
-    ("tria", "tria"): 1,
-    ("rect", "rect"): 1,
-    ("circ", "circ"): 1,
-    ("trap", "trap"): 1,
-    ("tria", "rect"): 0,
-    ("tria", "circ"): 0.5,
-    ("tria", "trap"): 0,
-    ("rect", "circ"): 0,
-    ("rect", "trap"): 0.5,
-    ("circ", "trap"): 0
-}
 
 def read_data(fname):
     df = pd.read_csv(fname)
@@ -51,7 +38,7 @@ def compute_retrieval(activation, tau, s):
     # return random() < (1/(1+math.exp((tau - activation) / s)))
     return (1/(1+np.exp((tau - activation[-1]) / s)))
 
-def compute_evidence(skill, base_activations):
+def compute_evidence(skill, base_activations, similarity):
     sk = skill.split('_')[0]
     if (sk not in {"tria", "rect", "circ", "trap"}):
         # skill used not recognized
@@ -68,7 +55,7 @@ def compute_evidence(skill, base_activations):
     return evidence
 
 def update_activation_itr(activated_skill, question_type, base_activations, acc_activations, activations,
-                          exp_inds, b0, b1, c, alpha, gamma, decay_acc, t):
+                          exp_inds, b0, b1, c, alpha, gamma, decay_acc, similarity, t):
     for skill in activations:
         if question_type == "WE" and skill == activated_skill:
             beta = b0
@@ -79,7 +66,7 @@ def update_activation_itr(activated_skill, question_type, base_activations, acc_
         c=c,
         alpha=alpha)
         base_activation = compute_activation_recursive(t - exp_inds[skill], decay, beta)
-        evidence = compute_evidence(skill, base_activations)
+        evidence = compute_evidence(skill, base_activations, similarity)
         acc_activation = acc_activations[skill][-1] + np.exp(gamma * evidence - 1) - decay_acc * np.log(t + 1)
         activation = base_activation + acc_activation
 
@@ -87,7 +74,7 @@ def update_activation_itr(activated_skill, question_type, base_activations, acc_
         acc_activations[skill] = np.append(acc_activations[skill], acc_activation)
         activations[skill] = np.append(activations[skill], activation)
 
-def calculate_training_activation(df, b0, b1, c, alpha, tau, gamma, decay_acc, s):
+def calculate_training_activation(df, b0, b1, c, alpha, tau, gamma, decay_acc, s, similarity):
     activations = {}
     base_activations = {}
     acc_activations = {}
@@ -114,13 +101,27 @@ def calculate_training_activation(df, b0, b1, c, alpha, tau, gamma, decay_acc, s
             else:
                 exp_inds[pid][activated_skill] = np.append(exp_inds[pid][activated_skill], i)
             update_activation_itr(activated_skill, question_type, base_activations[pid], acc_activations[pid], activations[pid],
-                                  exp_inds[pid], b0, b1, c, alpha, gamma, decay_acc, t=i)
+                                  exp_inds[pid], b0, b1, c, alpha, gamma, decay_acc, similarity, t=i)
     return retrieval_probs
 
 def sse(args):
     total = 0
-    b0, b1, c, alpha, tau, gamma, decay_acc, s = args
-    retrieval_probs = calculate_training_activation(df, b0, b1, c, alpha, tau, gamma, decay_acc, s)
+    # b0, b1, c, alpha, tau, gamma, decay_acc, s = args
+    b0, b1, c, alpha, tau, s = (4, 0, 0.277, 0.177, -0.7, 0.1)
+    gamma, decay_acc, tr, tc, tt, rc, rt, ct = args
+    similarity = {
+        ("tria", "tria"): 1,
+        ("rect", "rect"): 1,
+        ("circ", "circ"): 1,
+        ("trap", "trap"): 1,
+        ("tria", "rect"): tr,
+        ("tria", "circ"): tc,
+        ("tria", "trap"): tt,
+        ("rect", "circ"): rc,
+        ("rect", "trap"): rt,
+        ("circ", "trap"): ct
+    }
+    retrieval_probs = calculate_training_activation(df, b0, b1, c, alpha, tau, gamma, decay_acc, s, similarity)
     for pid in retrieval_probs:
         total += np.sum((df[pid]["correctness"][-16:] - retrieval_probs[pid])**2)
     return total
@@ -128,7 +129,7 @@ def sse(args):
 def main():
     # put these in the fitting function
     # "c": 0.277, "alpha": 0.177, "tau": -0.7, "exp_beta": 4, "decay_acc": 0.1, "gamma": 1
-    initial_guess = [4, 0, 0.277, 0.177, -0.7, 1, 0.1, 1]
+    initial_guess = [1, 0.01, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
     global df
     df = read_data("immediate_test_clean.csv")
     fitted_params = minimize(sse, initial_guess, tol=1e-3, method="Powell")
