@@ -61,7 +61,7 @@ def calculate_training_activation(df, b0, b1, c, alpha, tau, s):
             correct_skill = df[pid]["correct_ans"][i]
             question_type = df[pid]["question_type_seq"][i]
             if i > 23:
-                if activated_skill in activations[pid]:
+                if activated_skill in activations[pid] and correct_skill in activations[pid]:
                     retrieval_probs[pid][i-24] = compute_retrieval(activations[pid][correct_skill], tau, s)
             if activated_skill not in activations[pid]:
                 exp_inds[pid][activated_skill] = np.array([i])
@@ -87,6 +87,7 @@ def main():
     df = read_data("immediate_test_clean.csv")
     fitted_params = minimize(sse, initial_guess, tol=1e-3, method="Powell")
     print(fitted_params)
+    # np.savetxt("fitted_params.txt", fitted_params["x"], fmt="%s")
 
 
 if __name__ == "__main__":
