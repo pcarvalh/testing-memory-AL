@@ -49,7 +49,7 @@ def compute_evidence(skill, base_activations, similarity):
         other_sk = other_skill.split('_')[0]
         if (other_sk not in {"tria", "rect", "circ", "trap"}): continue
         if sk == other_sk:
-            evidence -= np.exp(values[-1]) * max(similarity.get((sk, other_sk), 0), similarity.get((other_sk, sk), 0))
+            evidence -= np.exp(values[-1])  # similarity value is implicitly 1
         else:
             evidence += np.exp(values[-1]) * max(similarity.get((sk, other_sk), 0), similarity.get((other_sk, sk), 0))
     return evidence
@@ -74,12 +74,18 @@ def update_activation_itr(activated_skill, question_type, base_activations, acc_
         acc_activations[skill] = np.append(acc_activations[skill], acc_activation)
         activations[skill] = np.append(activations[skill], activation)
 
+def normalize_similarity(similarity):
+    max_val = max(v for k, v in similarity.items())
+    for k, _ in similarity.items():
+        similarity[k] /= max_val
+
 def calculate_training_activation(df, b0, b1, c, alpha, tau, gamma, decay_acc, s, similarity):
     activations = {}
     base_activations = {}
     acc_activations = {}
     retrieval_probs = {}
     exp_inds = {}
+    normalize_similarity(similarity)
     for pid in df:
         activations[pid] = {}
         base_activations[pid] = {}
@@ -110,10 +116,6 @@ def sse(args):
     b0, b1, c, alpha, tau, s = (4, 0, 0.277, 0.177, -0.7, 0.1)
     gamma, decay_acc, tr, tc, tt, rc, rt, ct = args
     similarity = {
-        ("tria", "tria"): 1,
-        ("rect", "rect"): 1,
-        ("circ", "circ"): 1,
-        ("trap", "trap"): 1,
         ("tria", "rect"): tr,
         ("tria", "circ"): tc,
         ("tria", "trap"): tt,
@@ -129,7 +131,9 @@ def sse(args):
 def main():
     # put these in the fitting function
     # "c": 0.277, "alpha": 0.177, "tau": -0.7, "exp_beta": 4, "decay_acc": 0.1, "gamma": 1
-    initial_guess = [1, 0.01, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+    # initialize similarities to random values
+    initial_guess = [1, 0.01, 0.4650385296247581, 0.8258713680570794, 0.9149317207096914,
+                     0.41737748622124127, 0.6775643054880217, 0.5038533708328244]
     global df
     df = read_data("immediate_test_clean.csv")
     fitted_params = minimize(sse, initial_guess, tol=1e-3, method="Powell")
