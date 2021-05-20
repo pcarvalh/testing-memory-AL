@@ -1,0 +1,40 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+prolific_data <- read_csv("immediate_test_clean.csv")
+```
+
+```{r}
+prolific_data %>% 
+  filter(trial_subtype == "posttest-free-response") %>% 
+  group_by(prolific_id, participant_training, participant_concepts, question_type) %>%
+  summarize(prop_correct = sum(correctness) / 8) %>% 
+  group_by(participant_training, participant_concepts) %>% 
+  summarize(mean(prop_correct))
+```
+
+```{r}
+sim_data <- read_csv("sim_results.csv")
+```
+
+```{r}
+sim_data %>% 
+  filter(question_type_seq %in% c("F", "S")) %>% 
+  group_by(pid, participant_training, participant_concepts, question_type_seq) %>%
+  summarize(prop_correct = sum(correctness) / 8) %>% 
+  group_by(participant_training, participant_concepts) %>% 
+  summarize(mean(prop_correct))
+
+```
+

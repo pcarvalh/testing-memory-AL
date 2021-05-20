@@ -87,7 +87,7 @@ def main():
     df = read_data("immediate_test_clean.csv")
     fitted_params = minimize(sse, initial_guess, tol=1e-3, method="Powell")
     print(fitted_params)
-    np.savetxt("fitted_params.txt", fitted_params["x"], fmt="%s")
+    # np.savetxt("fitted_params.txt", fitted_params["x"], fmt="%s")
 
 
 if __name__ == "__main__":
